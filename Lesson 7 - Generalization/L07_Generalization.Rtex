@@ -1,0 +1,375 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\pagestyle{empty}
+\usepackage{placeins}
+\usepackage{changepage}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{collectbox}
+\usepackage{wrapfig}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{gensymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{afterpage}
+\usepackage{overpic}
+\usetikzlibrary{calc}
+\usetikzlibrary{calc,patterns,angles,quotes}
+\usepackage{xfrac}
+\usetikzlibrary{automata, positioning}
+\usepackage{color,soul}
+
+
+\pgfplotsset{width=9cm,height=6.5cm,compat=1.9}
+
+\setcounter{page}{1}
+
+
+
+
+% R Code to load tidyverse package
+<<echo=FALSE, message=FALSE, warning=FALSE>>=
+library(tidyverse)
+@
+
+% Alternate method of doing solution function.
+%\newcommand{\sol}[1]{}
+%\renewcommand{\sol}[1]{{\color{blue} #1 \fi}}
+
+%----------------------------------COMMANDS----------------------------------------------------
+%---Create function to control text solution display----------------%
+\newif\ifPrintSolution
+\newcommand{\showSolution}{\PrintSolutiontrue}
+\newcommand{\sol}[1]{\ifPrintSolution {\color{blue} #1 } \fi}
+%---END Solution Function-------------------------------------------%
+
+%---Create function to control R-Code solution display--------------%
+\newcommand{\solR}[1]{} 
+%---END R-Code Solution Function------------------------------------%
+
+%%%%%%%%%%% Turn ON/OFF text solutions with this command%%%%%%%%%%%
+%\showSolution % comment out to hide solutions 
+%%%%%%%%%%% Turn ON/OFF R-code solutions with this command%%%%%%%%%
+%\renewcommand{\solR}[0]{} % Comment out to hide R-Code Solutions
+
+%------------------------------------------------------------------------------------------------
+
+% Use \sol for text solutions and \solR for code chunk solutions
+
+\begin{document}
+
+
+\noindent {{\bf MA206}, Lesson 7 - Generalization}
+\vspace{.1in}
+
+
+What is \textbf{generalization}?
+
+\sol{How \textbf{broadly} the conclusions apply. It is to which, if any, larger group of individuals our results may apply to outside of the assessed sample.} 
+
+\vfill
+
+\textbf{Define:}
+
+\hspace{.2in} \textbf{Population}: \\
+\sol{Indicated by N}\\
+\sol{The population is the entire set of observational units of a certain group}
+
+
+\vfill
+\hspace{0.2in} \textbf{Sample}:\\
+\sol{Indicated by n}\\
+\sol{Some smaller subset of a larger population}
+
+\vfill
+\hspace{0.2in}\textbf{Convenience Sample}:\\
+\sol{A nonrandom sample of a population which often tends to oversample a certain group within the population while undersampling others.}
+
+\vfill
+\hspace{0.2in} \textbf{Biased Sampling Method}:\\
+\sol{A sampling method which tends to consistently overestimate or underestimate the population parameter of interest.}
+
+\vfill
+\hspace{0.2in} \textbf{Simple Random Sample}:\\
+\sol{A random sample which ensures each observational unit has the same chance of being selected in the sample. Typically done through a Random Number Generator, pulling names from a hat, rolling dice, etc.}
+
+\vfill
+Does a larger sample size fix sampling bias?\\
+\sol{No. Larger sample size will not fix a biased sampling method.}
+
+
+\vspace{0.4in}
+What are some Nonsampling concerns which might also introduce bias into our data?\\
+\sol{Some examples might include the wording of a question, lack of anonymity, extreme phrasing, uncalibrated scales, time of day, intimidation, etc.}
+
+
+
+
+
+\newpage
+
+
+
+
+
+
+
+
+\textbf{1) } Suppose you have a massive dessert bowl containing 40$\%$ red skittles and 60$\%$ green skittles. You take many, many random samples of 25 skittles and each time note the proportion that are red. From this, you create a distribution of all your sample proportions of red skittles. 
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{a)}  What is the expected mean of your distribution of sample proportions?}
+
+\sol{0.4, the true proportion of red skittles ($40\%$)}
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{b) } What is the expected standard deviation of your distribution?}
+
+\sol{$\sqrt{\frac{0.4*(1 - 0.4)}{25}} = 0.0979796$}
+
+\solR{
+<<>>=
+pi <- 0.40
+n <- 25
+
+sd <- sqrt((pi * (1 - pi))/n)
+sd
+@
+}
+
+
+
+
+\vfill
+
+
+
+\textbf{2) } Suppose the leadership at Arvin Gym wants to get a sense of how many cadets actually want to reopen the weight room on the third floor. They know that sending a survey out to the entire Corps is destined to fail, and so have come up with four courses of action. 
+
+\colorbox{yellow}{Which course of action below should be used? Justify your answer.}
+
+\hspace{0.2in} \textbf{a) }Send a survey to the Football Team to gather their opinion.
+
+\hspace{0.2in} \textbf{b) }Have the front desk ask everybody who comes into Arvin.
+
+\hspace{0.2in} \textbf{c) }Compile a list of names of all the Cadets on Corps Squad teams, randomly select a sample of those names using a random number generator, and survey those cadets.
+
+\hspace{0.2in} \textbf{d) }Compile a list of names of all Cadets, Staff, and Faculty at USMA, randomly select a sample of those names using a random number generator, and survey those individuals.
+
+\hspace{0.2in} \textbf{e) }Compile a list of names of all Cadets, randomly select a sample of those names using a random number generator, and survey those individuals.
+
+\sol{Compile a list of names of all Cadets, randomly select a sample of those names using a random number generator, and survey those individuals. This simple random sampling method ensures all Cadets (the population of interest) are equally likely to be chosen, and thus can be generalized to the Corps of Cadets.}
+\vfill
+
+
+
+
+\newpage
+
+
+
+
+\textbf{3) } As part of the General Social Survey (GSS) in 2018, a random sample of U.S. adults were asked whether they have ever been told by a health professional that they have depression. In the sample of 1,414 people that received this question, 271 of them said that they have been told that they did have depression.
+
+\hspace{0.1in} \textbf{a)} Suppose in the population of all U.S. adults, 20$\%$ have been told by a health professional that they had depression. What should be the mean and standard deviation be if we were to sample from this population many times?
+
+\sol{From CLT, Mean = 0.2 (the true population parameter)\\
+SD = $\sqrt{\frac{0.2 \times (1 - 0.2)}{1414}} = 0.0106374$}
+
+\solR{
+<<>>=
+pi <- 0.20
+n <- 1414
+
+sd <- sqrt((pi * (1 - pi))/n)
+sd
+@
+}
+
+\vfill
+
+\hspace{0.1in} \textbf{b)} How many standard deviations below the mean of the distribution described in part (a) is the sample proportion from the GSS?
+
+\sol{$\hat{p} = \frac{271}{1414} = 0.19165\\
+z = \frac{0.19165 - 0.2}{0.010637395} = -0.7845$\\
+The sample proportion from GSS is 0.7845 standard deviations below the mean.}
+
+\solR{
+<<>>=
+phat <- 271/n
+phat
+
+z <- (phat - pi)/sd
+z
+@
+}
+
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c)} Based on your answer from part (b), is it very unlikely that a random sample of 1,414 U.S. adults would} \colorbox{yellow}{only find 271 of them that would say that they have been told they had depression? Explain.}
+
+\sol{No, it is not unlikely. With only -0.7845 standard deviations from the mean, this is weak evidence against the null hypothesis that the true proportion of Americans who have ever been told they've had depression is 20$\%$.}
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d)} Using your work, calculate a p-value for an alternative hypothesis that the true proportion of adults that} \\ \colorbox{yellow}{have been told by a health professional that they had depression is not 20$\%$}.
+
+\sol{$z$ = -0.7845 gives a $p$-value of 0.433.}
+
+\solR{
+<<>>=
+pvalue <- 2*(1-pnorm(abs(z)))
+pvalue
+@
+}
+\vfill
+
+
+\newpage
+
+\textbf{4) } A survey was conducted on 56 West Point cadets in MAJ McD's AY23-2 MA206 class about their preferences for original Starburst flavors between Pink, Orange, and Yellow. The results are compiled in the \color{blue}Starburst.csv \color{black} file on Teams. You may use the course guide as a reference to read in this file. We want to validate the claim that, if given a choice between Pink, Orange, and Yellow from the original starburst colors, cadets think that Yellow starburst are the worst.
+
+\hspace{0.1in} \textbf{a) } Write the null and alternate hypotheses using symbols and describe the parameter of interest in words.
+
+\sol{$H_0: \pi = \frac{1}{3} \\
+H_a: \pi > \frac{1}{3}$\\
+The parameter $\pi$ is the true long-run proportion of cadets who chose yellow as their least favorite flavor.}
+
+\solR{
+<<message=FALSE>>=
+Results <- read_csv("Starburst.csv")
+head(Results)
+@
+}
+
+
+\vfill
+
+\hspace{0.1in} \textbf{b) } List your observed statistic, sample size, standardized statistic, and p-value (using appropriate methods).
+
+\sol{$\hat{p} = \frac{17}{56} = 0.3035714$\\
+\textit{n} = 56\\
+$z = \frac{0.3035714 - 0.333333}{\sqrt{\frac{0.3333 \times (1 - 0.3333)}{56}}} = -0.4724556\\
+p-value = 1 - pnorm(z) [greater than test] = 0.6816992$}
+
+\solR{
+\begin{verbatim}
+Results %>% 
+  tabyl(Worst) %>% 
+  adorn_totals() 
+\end{verbatim}
+}
+
+\solR{
+<<>>=
+n <- 56
+phat <- 17/n
+pi <- (1/3)
+
+sd <- sqrt((pi * (1-pi))/n)
+
+z <- (phat - pi)/sd
+
+pvalue <- 1-pnorm(z)
+
+phat
+sd
+z
+pvalue
+@
+}
+
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) } Interpret the results of your analysis. Ensure you include your calculated p-value.}
+
+\sol{With a p-value of 0.6816992, we conclude that we have very weak to no evidence against the null hypothesis and therefore cannot support the claim that cadets believe yellow is the worst flavor.}
+
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d) } Do you feel comfortable generalizing these results to the entire Corps of Cadets?}
+
+\sol{No, the samples were limited to MAJ McD's AY23-2 MA206 class, which is comprised mostly Yearlings excited about statistics. As not every cadet had an equal chance to be selected, there may be sampling bias and we cannot generalize.}
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{e) } To what population would you feel comfortable generalizing these results to?}
+
+\sol{As this was a convenience sample and not a random sample, I do not feel comfortable generalizing these results to any outside population.}
+
+\vfill
+
+
+
+\newpage
+
+
+
+
+
+\textbf{5) } According to the National Coffee Drinking Study from the National Coffee Association, 40$\%$ of 18- to 24-year-olds in the United States regularly drink coffee every day. Suppose this number is accurate. Researchers are interested in testing if the daily coffee-drinking habits of cadets at West Point differ from the national average. To test this, they sampled 140 cadets in Grant Hall after lunch. Of those, 73 indicated they regularly drank coffee every day. 
+
+\hspace{0.1in} \textbf{a) } Write the null and alternate hypotheses, in words and symbols.
+
+\sol{$H_0: \pi = 0.4$. The true proportion of West Point cadets who drink coffee every day is 40$\%$.\\
+$H_a: \pi \ne 0.4$. The true proportion of West Point cadets who drink coffee every day is not equal to 40$\%$.}
+
+\vfill
+
+\hspace{0.1in} \textbf{b) } Do we meet validity conditions to use theoretical methods in this analysis?
+
+\sol{Yes, because there are 73 ``successes" and 67 ``failures", both greater than 10.}
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) } Using simulation, report the standardized statistic and p-value.}
+
+\sol{Answers may vary.
+$z = \frac{stat - mean(null)}{sd(null)} = \frac{0.5214 - 0.4}{0.043} = 2.82392$ \\
+$p$-value = 0.005
+}
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d) } Using theoretical methods, report the standardized statistic and p-value.}
+
+\sol{$z = \frac{stat - mean(null)}{sd(null)} = \frac{0.5214 - 0.4}{\sqrt{\frac{0.4 \times (1 - 0.4)}{140}}} = \frac{0.1214}{0.0414} = 2.9328$\\
+$p$-value = $2*(1-pnorm(abs(z)))$ = 0.00336}
+
+
+\solR{
+<<>>=
+n <- 140
+phat <- 73/n
+pi <- 0.40
+sd <- sqrt((pi * (1 - pi))/n)
+z <- (phat - pi)/sd; z
+pvalue <- 2*(1-pnorm(abs(z))); pvalue
+@
+}
+
+\vfill
+
+\hspace{0.1in} \textbf{e) } In words, summarize your findings. Use your findings from \textbf{c) } or \textbf{d) } to justify your conclusion, using the appropriate based on validity conditions.
+
+\sol{With a theoretical p-value of 0.00336, we have very strong evidence against the null hypothesis that West Point cadets have the same coffee consumption as the National average.}
+
+\vfill
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{f) } Comment on the generalize-ability of these results.}
+
+\sol{This was a convenience sample from Grant, so the results cannot be generalized. Even if the sample was a random sample, as best the results could be generalized to cadets in Grant Hall after lunch, not the rest of the Corps of Cadets who do not frequent Grant Hall.}
+
+\end{document}
