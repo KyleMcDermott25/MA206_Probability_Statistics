@@ -1,0 +1,627 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\pagestyle{empty}
+\usepackage{placeins}
+\usepackage{changepage}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{collectbox}
+\usepackage{wrapfig}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{gensymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{afterpage}
+\usepackage{overpic}
+\usetikzlibrary{calc}
+\usetikzlibrary{calc,patterns,angles,quotes}
+\usepackage{xfrac}
+\usetikzlibrary{automata, positioning}
+\usepackage{color,soul}
+
+
+\pgfplotsset{width=9cm,height=6.5cm,compat=1.9}
+
+\setcounter{page}{1}
+
+
+
+
+% R Code to load tidyverse package
+<<echo=FALSE, message=FALSE, warning=FALSE>>=
+library(tidyverse)
+@
+
+% Alternate method of doing solution function.
+%\newcommand{\sol}[1]{}
+%\renewcommand{\sol}[1]{{\color{blue} #1 \fi}}
+
+%----------------------------------COMMANDS----------------------------------------------------
+%---Create function to control text solution display----------------%
+\newif\ifPrintSolution
+\newcommand{\showSolution}{\PrintSolutiontrue}
+\newcommand{\sol}[1]{\ifPrintSolution {\color{blue} #1 } \fi}
+%---END Solution Function-------------------------------------------%
+
+%---Create function to control R-Code solution display--------------%
+\newcommand{\solR}[1]{} 
+%---END R-Code Solution Function------------------------------------%
+
+%%%%%%%%%%% Turn ON/OFF text solutions with this command%%%%%%%%%%%
+\showSolution % comment out to hide solutions 
+%%%%%%%%%%% Turn ON/OFF R-code solutions with this command%%%%%%%%%
+\renewcommand{\solR}[0]{} % Comment out to hide R-Code Solutions
+
+%------------------------------------------------------------------------------------------------
+
+% Use \sol for text solutions and \solR for code chunk solutions
+
+\begin{document}
+
+\noindent \textbf{MA206 Lesson 8 - Generalization}
+\vspace{.1in}
+
+What is $\mu$?
+
+\sol{ $\mu$ indicates the population mean, it is a parameter.}
+
+\vfill
+
+What is $\bar{x}$ and how do we calculate it using R?
+
+\sol{$\bar{x}$ is the sample mean, the statistic observed from quantitative data.\\
+We find it using the command \color{blue} mean(data) \color{black} }
+
+
+\vfill
+
+What is $\sigma$?
+
+\sol{ $\sigma$ indicates the population standard deviation, it is a parameter.}
+
+\vfill
+
+What is \textit{s} and how do we calculate it using R?
+
+\sol{\textit{s} is the sample standard deviation, the statistic observed from quantitative data.\\
+We find it using the comand \color{blue} sd(data) \color{black}}
+
+
+\vfill
+
+Given sufficiently large samples of a population, what does the Central Limit Theorem state the standard deviation of the mean ($\bar{x}$) will converge to?
+
+\sol{SD($\bar{x}$) = $\frac{\sigma}{\sqrt{n}}$, where we can estimate $\sigma$ with \textit{s}}
+
+\vfill
+
+\textbf{Review:} How is the standardized statistic for a \textbf{single proportion} calculated?
+
+z = \sol{$ \frac{\hat{p} - \pi}{\sqrt{\frac{\pi (1 - \pi)}{n}}}$}
+
+\vfill
+
+How is the standardized statistic for a \textbf{single mean} calculated?
+
+t = \sol{$ \frac{\bar{x} - \mu}{\frac{s}{\sqrt{{n}}}}$}
+
+\vfill
+
+What are the validity conditions for a single mean quantitative variable to use a theory-based approach for strength of evidence?
+
+\sol{The distribution must be symmetric \textbf{OR} must have at least 20 observations and not be heavily skewed}
+
+\vfill
+
+What is an alternative measure for centrality if a distribution is heavily skewed?
+
+\sol{The Median}
+
+\vfill
+
+What is the R code to calculate a p-value from a t-distribution for a single mean quantitative variable?
+
+\sol{$H_a: \mu > \; \; \; $ \color{blue} 1 - pt(t, n-1) \color{black}}\\
+\sol{$H_a: \mu < \; \; \; $ \color{blue} pt(t, n-1) \color{black}}\\
+\sol{$H_a: \mu \ne \; \; \; $ \color{blue} 2*(1 - pt(abs(t), n-1)) \color{black}}\\
+
+
+
+\newpage
+
+
+
+
+Load the provided \textcolor{blue}{ACFT1.csv} Dataset. This constitutes data collected on or about 2019 (pre-Covid) from randomly selected cadets in 1st Regiment on physical fitness and includes APFT, IOCT, and ACFT performance. Researchers were curious to know how cadets performed physically on various tests, specifically if they were above average. We will conduct analysis on all three tests.
+
+\color{blue} library(tidyverse) \\
+ACFT $<$- read$\_$csv("ACFT1.csv") \color{black}
+
+(Alternatively, as this dataset is loaded online as a .csv file, we can run the following line of code).
+\begin{verbatim}
+ACFT <- read_csv("https://raw.githubusercontent.com/rslasater82/MA206Datasets/main/ACFT.csv")
+\end{verbatim}
+
+\vspace{0.1 in}
+We can begin exploring our available data to see what variables are captured.
+
+\color{blue} head(ACFT)\\
+colnames(ACFT) \color{black}
+
+\vspace{0.2 in}
+
+1. What are the observational units in this study?
+
+\sol{Each individual cadet}
+
+\vspace{0.2in}
+
+2. What are some categorical and quantitative variables of interest? List and classify some of interest.
+
+\sol{Some variation, but a categorical could be "Sex", quantitative could include "age, IOCT$\_$Score, AFCT$\_$score, etc.}
+
+
+\section*{APFT}
+
+The APFT is scored with 3 events on a 100 point scale, where 60 is passing in each of the three events (pushup, situp, and 2 mile run). If a Soldier scores at least 100 points on each event, they can push past 300 to an "extended scale," but if any event falls beneath the 100 point threshold then the "additional" points are lost. It has been suggested that the Corps of Cadets had an average APFT score of 270, and we want to assess if this is true.
+
+\subsection*{Step 1: Ask a Research Question}
+
+\textbf{A.3)} What is the research question?
+
+\sol{Is the Corps of Cadets average APFT score equal to 270 or not?}
+
+\vspace{0.2in}
+
+\textbf{A.4)} Based on these questions, what is the population of interest?
+
+\sol{The population of interest is the Corps of Cadets}
+
+\vspace{0.2in}
+
+\subsection*{Step 2: Design a Study and Collect Data}
+
+\textbf{A.5)} What is our null and alternate hypothesis, stated in both words and symbols?
+
+\sol{$H_0: \mu = 270$. The true mean APFT score for the Corps of Cadets is 270.\\
+$H_a: \mu \ne 270$. The true mean APFT score for the Corps of Cadets is not 270.}
+
+\vspace{0.2in}
+
+\;
+\\ 
+
+\colorbox{yellow}{\textbf{A.6)} What is our variable of interest? Is it categorical or quantitative?}
+
+\sol{Our variable of interest is APFT$\_$score, which is a quantitative variable.}
+
+\vspace{0.2in}
+
+\colorbox{yellow}{\textbf{A.7)} Based on the classification in \textbf{6}, what theory-based test will we conduct? (hint: z or t)}
+
+\sol{A quantitative variable will conduct a single-mean test with the \textit{t} statistic.}
+
+\subsection*{Step 3: Explore the Data}
+
+(Helpful R code, courtesy of the TidyVerse Tutorial. Know where to find this for your own reference.) \color{blue}
+
+\begin{verbatim}
+ACFT %>% 
+  ggplot(aes(x = APFT_score)) +
+  geom_histogram()+
+  labs(x = "Overall Score", y="Count", title="Cadet APFT Scores")
+
+ACFT %>% 
+    summarize(
+        median = median(APFT_score),
+        mean = mean(APFT_score),
+        s = sd(APFT_score),
+        n = n()
+    )
+    \end{verbatim}
+\color{black}
+
+\textbf{A.8)} Use R to create a histogram of the APFT scores and describe the shape, center, variability, and any unusual observations.
+
+\sol{The shape appears to have two peaks split at the 300 cutoff point, which makes sense due to the grading rules. It has a mean at 304 and median at 296, indicating some right skew. Our standard deviation is 29.1, with values ranging from about 225 up to 275.}
+
+\vspace{0.2in}
+
+\textbf{A.9)} Calculate the mean, median, standard deviation, and sample size of the ACFT scores. Include the proper notation as appropriate.
+
+\sol{From the code above, we find that 
+mean = $\mu$ = 304\\
+median = 296 \\
+standard deviation = \textit{s} = 29.1\\
+sample size = \textit{n} = 293}
+
+\vspace{0.25 in}
+
+\subsection*{Step 4: Draw Inferences Beyond the Data}
+
+\textbf{A.10)} Have we met our validity conditions to use theoretical methods? Why or why not?
+
+\sol{Yes, for quantitative data we have more than 20 observations and the data is not strongly skewed.}
+
+\vspace{0.2in}
+
+\colorbox{yellow}{\textbf{A.11)} Assume we met our validity conditions. Using theory, calculate the appropriate standardized statistic.}
+
+\sol{ $t = \frac{304 - 270}{\frac{29.1}{\sqrt{293}}}$ = 19.99953}
+
+\vspace{0.3in}
+
+\colorbox{yellow}{\textbf{A.12)} Calculate the appropriate p-value using the theoretical method and standardized statistic from \textbf{11}.}
+
+\sol{$2*(1 - pt(abs(19.99953), 292)) = 0$}
+
+\vspace{0.3in}
+
+\textbf{A.13)} Comment on the strength of evidence as it applies to our null and alternate hypotheses.
+
+\sol{ With a p-value of (computationally) 0, we have very strong evidence that the true mean of corps of cadets APFT scores is not equal to 270.}
+
+\vspace{0.1in}
+
+\subsection*{Step 5: Formulate Conclusions}
+
+\textbf{A.14)} Do you feel comfortable generalizing the results of your analysis to all Army cadets (USMA, ROTC, G2G)? Explain your reasoning.
+
+\sol{No, those observational units did not have an equal chance of being selected and so we cannot generalize these results.}
+
+\vspace{0.25in}
+
+\textbf{A.15)} Do you feel comfortable generalizing the results of your analysis to the Corps of Cadets? Explain your reasoning.
+
+\sol{No,  observational units from different regiments did not have an equal chance of being selected and so we cannot generalize these results to populations outside of 1st REG.}
+
+\vspace{0.35in}
+
+\colorbox{yellow}{\textbf{A.16)} What population could you generalize your results to? Explain your reasoning.}
+
+\sol{We can generalize these results to the 1st Regiment population of cadets, as those cadets had an equal probability of being sampled for this study.}
+
+\vspace{0.25in}
+
+\textbf{A.17)} How confident are you to say that we have proven the alternate hypothesis?
+
+\sol{We never say we proved or disproved a hypothesis, only that we have very strong evidence against the null hypothesis.}
+
+\vspace{0.1in}
+
+
+\subsection*{Step 6: Look Back and Ahead}
+
+\textbf{A.18)} Suggest how you might redesign the experiment to allow you to draw a more broad conclusion.
+
+\sol{To generalize to the USMA Corps of Cadets, we would randomly sample from the entire population of the corps of cadets instead of just one regiment. To generalize to all cadets, we would need to be able to randomly sample from the Corps of Cadets, ROTC, and G2G populations with equal probability per cadet.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{A.19)} Suppose your research question had an alternate hypothesis for a one-sided test. That is, do USMA cadets,}\\ \colorbox{yellow}{on average, perform better than 270? Report your new alternate hypothesis, p-value  and the significance of your} \\ \colorbox{yellow}{findings. Is this surprising?}
+
+\sol{$H_a: \mu > 270; \; \; \; 1 - pt(19.99953, 292)) = 0$\\
+This is not surprising, it should be half the two-sided test, and $\frac{1}{2}$ of 0 is 0.}
+
+\vspace{0.75in}
+
+
+\colorbox{yellow}{\textbf{A.20)} Suppose you wanted to assess the data for only males or only females. Repeat your original ($\ne$) }\\\colorbox{yellow}{analysis with the proper subsets and report on your findings.}
+
+\sol{MALES: $t = \frac{301 - 270}{\frac{28.6}{\sqrt{234}}}$ = 16.58073, p-value $\approx$ 0}\\
+\sol{FEMALES: $t = \frac{313 - 270}{\frac{29.4}{\sqrt{59}}}$ = 11.23433, p-value = 2.22e$^{-16}$}
+
+\pagebreak
+
+\section*{IOCT}
+
+The IOCT is a timed event and times can be converted to a 1000 point scale for calculation into the Physical Program Score (Cumulative) where 900 points is the cutoff for an A, 800 for a B, and so on with a minimum passing score of 680. It has been suggested that DPE curves their scoring to keep the average at 800, but we want to assess if the current average is different than 800.
+
+\subsection*{Step 1: Ask a Research Question}
+
+\textbf{B.3)} What is the research question?
+
+\sol{Is the Corps of Cadets average IOCT score equal to 800 or not?}
+
+\vspace{0.25in}
+
+\textbf{B.4)} Based on these questions, what is the population of interest?
+
+\sol{The population of interest is the Corps of Cadets}
+
+\vspace{0.1in}
+
+\subsection*{Step 2: Design a Study and Collect Data}
+
+\textbf{B.5)} What is our null and alternate hypothesis, stated in both words and symbols?
+
+\sol{$H_0: \mu = 800$. The true mean IOCT score for the Corps of Cadets is 800.\\
+$H_a: \mu \ne 800$. The true mean IOCT score for the Corps of Cadets is not 800.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{B.6)} What is our variable of interest? Is it categorical or quantitative?}
+
+\sol{Our variable of interest is IOCT$\_$Score, which is a quantitative variable.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{B.7)} Based on the classification in \textbf{6}, what theory-based test will we conduct? (hint: z or t)}
+
+\sol{A quantitative variable will conduct a single-mean test with the \textit{t} statistic.}
+
+\vspace{0.25in}
+
+\subsection*{Step 3: Explore the Data}
+
+(Helpful R code, courtesy of the TidyVerse Tutorial. Know where to find this for your own reference.) \color{blue}
+
+\begin{verbatim}
+ACFT %>% 
+  ggplot(aes(x = IOCT_Score)) +
+  geom_histogram()+
+  labs(x = "Overall Score", y="Count", title="Cadet IOCT Scores")
+
+ACFT %>% 
+    summarize(
+        median = median(IOCT_Score),
+        mean = mean(IOCT_Score),
+        s = sd(IOCT_Score),
+        n = n()
+    )
+    \end{verbatim}
+\color{black}
+
+\textbf{B.8)} Use R to create a histogram of the IOCT scores and describe the shape, center, variability, and any unusual observations.
+
+\sol{The shape appears to be evenly split between 750 and 950, with smaller tails from 680 to 1000. There is a larger peak at 780ish and centered about 800 or 850.}
+
+\vspace{0.25in}
+
+\textbf{B.9)} Calculate the mean, median, standard deviation, and sample size of the ACFT scores. Include the proper notation as appropriate.
+
+\sol{From the code above, we find that 
+mean = $\mu$ = 824\\
+median = 829 \\
+standard deviation = \textit{s} = 83.9\\
+sample size = \textit{n} = 293}
+
+\vspace{0.25 in}
+
+\subsection*{Step 4: Draw Inferences Beyond the Data}
+
+\textbf{B.10)} Have we met our validity conditions to use theoretical methods? Why or why not?
+
+\sol{Yes, for quantitative data we have more than 20 observations and the data is not strongly skewed.}
+
+\vspace{0.25in}
+
+\textbf{B.11)} Assume we met our validity conditions. Using theory, calculate the appropriate standardized statistic.
+
+\sol{ $t = \frac{824 - 800}{\frac{83.9}{\sqrt{293}}}$ = 4.89647}
+
+\vspace{0.35in}
+
+\textbf{B.12)} Calculate the appropriate p-value using the theoretical method and standardized statistic from \textbf{11}.
+
+\sol{$2*(1 - pt(abs(4.89647), 292)) = 1.617708e^{-6}$}
+
+\vspace{0.35in}
+
+\textbf{B.13)} Comment on the strength of evidence as it applies to our null and alternate hypotheses.
+
+\sol{ With a p-value of 0.000006, we have very strong evidence that the true mean of corps of cadets IOCT scores is not equal to 800.}
+
+\vspace{0.251in}
+
+\subsection*{Step 5: Formulate Conclusions}
+
+\vspace{0.25in}
+
+\textbf{B.14)} Do you feel comfortable generalizing the results of your analysis to the Corps of Cadets? Explain your reasoning.
+
+\sol{No,  observational units from different regiments did not have an equal chance of being selected and so we cannot generalize these results to populations outside of 1st REG.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{B.15)} What population could you generalize your results to? Explain your reasoning.}
+
+\sol{We can generalize these results to the 1st Regiment population of cadets, as those cadets had an equal probability of being sampled for this study.}
+
+\vspace{0.25in}
+
+\textbf{B.16)} How confident are you to say that we have proven the alternate hypothesis?
+
+\sol{We never say we proved or disproved a hypothesis, only that we have strong evidence against the null hypothesis.}
+
+\vspace{0.25in}
+
+
+\subsection*{Step 6: Look Back and Ahead}
+
+\textbf{B.17)} Suggest how you might redesign the experiment to allow you to draw a more broad conclusion.
+
+\sol{To generalize to the corps of cadets, we would randomly sample from the entire population of the corps of cadets instead of just one regiment.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{B.18)} Suppose your research question had an alternate hypothesis for a one-sided test. That is, do cadets,}\\ \colorbox{yellow}{on average, perform better than 800? Report your new new alternate hypothesis, p-value  and the significance}\\ \colorbox{yellow}{of your findings. Is this surprising?}
+
+\sol{$H_a: \mu > 800; \; \; \; 1 - pt(4.89647, 292)) = 8.088539e^{-7}$\\
+This is not surprising, it should be half the two-sided test, and $\frac{1}{2}$ of .0000016 is 0.0000008}
+
+\vspace{0.75in}
+
+
+\colorbox{yellow}{\textbf{B.19)} Suppose you wanted to assess the data for only males or only females. Repeat your original ($\ne$) } \\ \colorbox{yellow}{analysis with the proper subsets and report on your findings.}
+
+\sol{MALES: $t = \frac{824 - 800}{\frac{85.1}{\sqrt{234}}}$ = 4.314094, p-value = 2.37e$^{-5}$}\\
+\sol{FEMALES: $t = \frac{847 - 800}{\frac{77.1}{\sqrt{59}}}$ = 4.682411, p-value = 1.75e$^{-5}$}
+
+\pagebreak
+
+\section*{ACFT}
+
+The ACFT is scored with 6 events on a 100 point scale, where 60 is passing in each of the six events. If the arbitrary ``average'' score is 80 in each event (480 points), is the Corps of Cadets ``average'' at the ACFT?
+
+\subsection*{Step 1: Ask a Research Question}
+
+\textbf{C.3)} What is the research question?
+
+\sol{Is the Corps of Cadets average ACFT score equal to 480 or not?}
+
+\vspace{0.25in}
+
+\textbf{C.4)} Based on these questions, what is the population of interest?
+
+\sol{The population of interest is the Corps of Cadets}
+
+\vspace{0.25in}
+
+\subsection*{Step 2: Design a Study and Collect Data}
+
+\textbf{C.5)} What is our null and alternate hypothesis, stated in both words and symbols?
+
+\sol{$H_0: \mu = 480$. The true mean ACFT score for the Corps of Cadets is 480.\\
+$H_a: \mu \ne 480$. The true mean ACFT score for the Corps of Cadets is not 480.}
+
+\vspace{0.35in}
+
+\colorbox{yellow}{\textbf{C.6)} What is our variable of interest? Is it categorical or quantitative?}
+
+\sol{Our variable of interest is ACFT$\_$score, which is a quantitative variable.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{C.7)} Based on the classification in \textbf{6}, what theory-based test will we conduct? (hint: z or t)}
+
+\sol{A quantitative variable will conduct a single-mean test with the \textit{t} statistic.}
+
+\subsection*{Step 3: Explore the Data}
+
+(Helpful R code, courtesy of the TidyVerse Tutorial. Know where to find this for your own reference.) \color{blue}
+
+\begin{verbatim}
+ACFT %>% 
+  ggplot(aes(x = ACFT_score)) +
+  geom_histogram()+
+  labs(x = "Overall Score", y="Count", title="Cadet ACFT Scores")
+
+ACFT %>% 
+    summarize(
+        median = median(ACFT_score),
+        mean = mean(APFT_score),
+        s = sd(APFT_score),
+        n = n()
+    )
+    \end{verbatim}
+\color{black}
+
+\textbf{C.8)} Use R to create a histogram of the ACFT scores and describe the shape, center, variability, and any unusual observations.
+
+\sol{The shape is left skewed with a peak at about 500, centered between 450 and 500. Values range from nearly 600 down to 250 with no obvious outliers.}
+
+\vspace{0.35in}
+
+\textbf{C.9)} Calculate the mean, median, standard deviation, and sample size of the ACFT scores. Include the proper notation as appropriate.
+
+\sol{From the code above, we find that 
+mean = $\mu$ = 487\\
+median = 505 \\
+standard deviation = \textit{s} = 64.7\\
+sample size = \textit{n} = 293}
+
+\vspace{0.25 in}
+
+\subsection*{Step 4: Draw Inferences Beyond the Data}
+
+\textbf{C.10)} Have we met our validity conditions to use theoretical methods? Why or why not?
+
+\sol{Yes, for quantitative data we have more than 20 observations and the data is not \textbf{strongly} skewed.}
+
+\vspace{0.25in}
+
+\textbf{C.11)} Assume we met our validity conditions. Using theory, calculate the appropriate standardized statistic.
+
+\sol{ $t = \frac{487 - 480}{\frac{64.7}{\sqrt{293}}}$ = 1.851943}
+
+\vspace{0.35in}
+
+\textbf{C.12)} Calculate the appropriate p-value using the theoretical method and standardized statistic from \textbf{11}.
+
+\sol{$2*(1 - pt(abs(1.851943), 292)) = 0.06504327$}
+
+\vspace{0.35in}
+
+\textbf{C.13)} Comment on the strength of evidence as it applies to our null and alternate hypotheses.
+
+\sol{ With a p-value of 0.065, we have moderate evidence that the true mean of corps of cadets ACFT scores is not equal to 480.}
+
+\vspace{0.25in}
+
+\subsection*{Step 5: Formulate Conclusions}
+
+\textbf{C.14)} Do you feel comfortable generalizing the results of your analysis to all Army cadets (USMA, ROTC, G2G)? Explain your reasoning.
+
+\sol{No, those observational units did not have an equal chance of being selected and so we cannot generalize these results.}
+
+\vspace{0.25in}
+
+\textbf{C.15)} Do you feel comfortable generalizing the results of your analysis to the Corps of Cadets? Explain your reasoning.
+
+\sol{No,  observational units from different regiments did not have an equal chance of being selected and so we cannot generalize these results to populations outside of 1st REG.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{C.16)} What population could you generalize your results to? Explain your reasoning.}
+
+\sol{We can generalize these results to the 1st Regiment population of cadets, as those cadets had an equal probability of being sampled for this study.}
+
+\vspace{0.25in}
+
+
+\textbf{C.17)} How confident are you to say that we have proven the alternate hypothesis?
+
+\sol{We never say we proved or disproved a hypothesis, only that we have moderate evidence against the null hypothesis.}
+
+\vspace{0.25in}
+
+
+\subsection*{Step 6: Look Back and Ahead}
+
+\textbf{C.18)} Suggest how you might redesign the experiment to allow you to draw a more broad conclusion.
+
+\sol{To generalize to the corps of cadets, we would randomly sample from the entire population of the corps of cadets instead of just one regiment. To generalize to all cadets, we would need to be able to randomly sample from the Corps of Cadets, ROTC, and G2G populations with equal probability per cadet.}
+
+\vspace{0.25in}
+
+\colorbox{yellow}{\textbf{C.19)} Suppose your research question had an alternate hypothesis for a one-sided test. Report your new new } \\ \colorbox{yellow}{alternate hypothesis, p-value  and the significance of your findings. Is this surprising?}
+
+\sol{$H_a: \mu > 480; \; \; \; 1 - pt(1.851943, 292)) = 0.03252164$\\
+This is not surprising, it should be half the two-sided test, and $\frac{1}{2}$ of 0.065 is 0.0325}
+
+\vspace{0.75in}
+
+
+\colorbox{yellow}{\textbf{C.20)} Suppose you wanted to assess the data for only males or only females. Repeat your original ($\ne$) } \\ \colorbox{yellow}{analysis with the proper subsets and report on your findings.}
+
+\sol{MALES: $t = \frac{512 - 480}{\frac{33.9}{\sqrt{234}}}$ = 14.4397, p-value $\approx$ 0}\\
+\sol{FEMALES: $t = \frac{386 - 480}{\frac{58.9}{\sqrt{59}}}$ = -12.25853, p-value $\approx$ 0}
+
+\vspace{0.5in}
+
+\colorbox{yellow}{\textbf{C.21)} What do the signs of the \textit{t} statistic tell you that the p-value alone does not in this case?}
+
+\sol{Here, it tells us two things. One, the evidence is strong that the male mean is larger than the null hypothesis (positive \textit{t}) while the evidence is strong that the female mean is smaller than the null hypothesis (negative \textit{t}). Furthermore, despite both p-values being computationally 0, we can see that the distance of the male scores is farther away, in terms of standard deviations, than the female scores.}
+
+\end{document}

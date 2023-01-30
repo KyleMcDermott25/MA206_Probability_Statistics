@@ -1,0 +1,406 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\pagestyle{empty}
+\usepackage{placeins}
+\usepackage{changepage}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{collectbox}
+\usepackage{wrapfig}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{gensymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{afterpage}
+\usepackage{overpic}
+\usetikzlibrary{calc}
+\usetikzlibrary{calc,patterns,angles,quotes}
+\usepackage{xfrac}
+\usetikzlibrary{automata, positioning}
+\usepackage{color,soul}
+
+
+\pgfplotsset{width=9cm,height=6.5cm,compat=1.9}
+
+\setcounter{page}{1}
+
+
+% Alternate method of doing solution function.
+%\newcommand{\sol}[1]{}
+%\renewcommand{\sol}[1]{{\color{blue} #1 \fi}}
+
+%----------------------------------COMMANDS----------------------------------------------------
+%---Create function to control text solution display----------------%
+\newif\ifPrintSolution
+\newcommand{\showSolution}{\PrintSolutiontrue}
+\newcommand{\sol}[1]{\ifPrintSolution {\color{blue} #1 } \fi}
+%---END Solution Function-------------------------------------------%
+
+%---Create function to control R-Code solution display--------------%
+\newcommand{\solR}[1]{} 
+%---END R-Code Solution Function------------------------------------%
+
+%%%%%%%%%%% Turn ON/OFF text solutions with this command%%%%%%%%%%%
+\showSolution % comment out to hide solutions 
+%%%%%%%%%%% Turn ON/OFF R-code solutions with this command%%%%%%%%%
+\renewcommand{\solR}[0]{} % Comment out to hide R-Code Solutions
+
+%------------------------------------------------------------------------------------------------
+
+% Use \sol for text solutions and \solR for code chunk solutions
+
+
+\begin{document}
+
+\noindent \textbf{MA206  Lesson 6 - Strength of Evidence}
+\vspace{.1in}
+
+
+
+
+\textbf{Review:} How is the standardized statistic of a single proportion calculated?
+
+
+\textbf{z = } \sol{$\frac{\hat{p} - mean(null)}{SD(null)}$} \\
+
+
+\vspace{0.1in}
+
+When can we use a theory-based approach to calculate a p-value?
+
+
+\sol{When our sample size is large enough. For a one-proportion z-test, we must have at least 10 successes and 10 failures in our sample.}
+
+
+\vspace{0.1 in}
+
+
+Using the theoretical approach, what is the expected standard deviation of a null distribution for one proportion?
+
+
+\sol{SD = $\sqrt{\frac{\pi (1 - \pi)}{n}}$}
+
+
+\vspace{0.1 in}
+
+Using the theoretical approach, how do we calculate our standardized statistic for one proportion?
+
+
+\textbf{z = } \sol{$\frac{\hat{p} - \pi}{\sqrt{\frac{\pi (1 - \pi)}{n}}}$}
+
+
+\vspace{0.1 in}
+
+How do we convert our theoretical z-score into a p-value?
+
+
+\sol{We could integrate, or use R depending on our null and alternate hypothesis.}
+
+
+
+\vspace{0.1in}
+\begin{tabular}{cc}
+\vspace{.1in}
+\sol{$H_a: \pi < \#$}&\sol{pnorm(z)}\\
+\vspace{.1in}
+\sol{$H_a: \pi > \#$}&\sol{1 - pnorm(z)}\\
+\vspace{.1in}
+\sol{$H_a: \pi \ne \#$}&\sol{2*(1 - pnorm(abs(z)))}\\
+\vspace{.1in}
+\end{tabular}
+
+\pagebreak
+\textbf{1) } Two firsties miss recall formation because they partied hard over the weekend, but blamed their lateness on a flat tire. The TAC team brings them both into separate offices and asks them both one question which will determine if they get hours or not. Which tire went flat? This question works if we assume that each tire is equally likely to be chosen, but it has been proposed that people tend to answer ``right front" more often. 
+
+To test this, we asked 28 cadets, if they were in this situation, which tire would they say had gone flat. Our results are shown below.
+
+\begin{table*}[htbp]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+
+\hline
+\textbf{Left Front} & \textbf{Left Rear} & \textbf{Right Front} & \textbf{Right Rear}\\
+\hline
+6 & 4 & 14 & 4\\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+\hspace{0.1in} \textbf{a) } What is the research question?
+
+\sol{Do cadets pick the right front tire more often than other tires?}
+
+\vspace{.25in}
+
+\hspace{0.1in} \textbf{b) } Identify the observational units in this study.
+
+\sol{Each of the 28 cadets asked}
+
+\vspace{.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) }Describe the parameter of interest (in words).}
+
+\sol{The parameter $\pi$ is the long run proportion of cadets who choose the right front tire.}
+
+\vspace{.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d) }State the appropriate null and alternate hypotheses to be tested, both in words and symbols.}
+
+\sol{$H_0: \pi = \frac{1}{4}$ - Our null hypothesis is that the long run proportion of cadets who choose the right front tire is one out of four.\\
+$H_a: \pi > \frac{1}{4}$ - Our alternate hypothesis is that the long run proportion of cadets who choose the right front tire is greater than one in four}
+
+
+\vspace{.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{e) }What is our observed statistic? What is our sample size?}
+
+\sol{$\hat{p} = \frac{14}{28} = 0.5$\\
+\textit{n} = 28}
+
+\vspace{0.25in}
+
+\hspace{0.1in}\colorbox{yellow}{\textbf{f) }Using the one-proportion applet, list the simulated p-value, standardized statistic, and interpret the}\\ \colorbox{yellow}{strength of evidence.}
+
+\sol{Answers may vary.\\
+p-value = 0.003; This is the probability of observing a result at least as extreme as 14/28 assuming our null hypothesis is true.\\
+z = 3.125. The observed result of 0.5 is 3.125 standard deviations above the hypothesized long-run proportion of 0.25\\
+Both of these indicate very strong strength of evidence against the null hypothesis that the long run proportion of cadets who choose front right is $\frac{1}{4}$.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{g) }Does our sample meet the validity conditions to use a theory-based test?
+
+\sol{Yes, we have 14 successes and 14 failures, both of which are above 10}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{h) }Assume that validity conditions are met. What is the theory-based standardized statistic  and p-value?}
+
+\sol{z = $\frac{0.5 - 0.25}{\sqrt{\frac{0.25 \times (1 - 0.25)}{28}}}$ = 3.05505\\
+p-value = 1 - pnorm(3.05505) = 0.001125}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{i) } Summarize the conclusion that you draw from this study and your analysis. Explain your reasoning.
+
+\sol{We have very strong evidence that cadets choose the right front tire more than 25$\%$ of the time. Through simulation, we would only expect to see our observation of $\frac{14}{28}$ about 1$\%$ of the time if the true long-run proportion of this process was 0.25.}
+
+\vspace{0.25in}
+
+\textbf{Suppose this study were repeated with only 14 cadets and 7 of them answered ``front right." Use this reduced sample scenario to answer parts \textit{j} through \textit{l}.
+}
+\vspace{0.1in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{j) }What would you expect to happen to the strength of evidence against the null hypothesis in this case?}
+
+\sol{We would expect weaker strength of evidence because the proportion stays the same but the sample size is smaller, so our p-value should be higher.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{k) } Does our reduced sample meet the validity conditions to use a theory-based test?
+
+\sol{No, here we have 7 successes and 7 failures, both less than the 10 required}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{l)} Using our reduced sample, calculate the new p-value and standardized statistic. Specify if you simulated}\\ \colorbox{yellow}{or used theoretical methods.}
+
+
+\sol{We do not meet validity conditions, so we must simulate.\\
+Answers will vary, should be about \\
+p-value = 0.0370\\
+z = 2.21}
+
+\pagebreak
+
+\textbf{2) } A taste test was run on 4 sections of MA206 cadets between three types of chewy chocolate chip cookies - CPT Rocha's homemade cookies, Chips Ahoy, and Keebler. The results are consolidated in the \color{blue} Cookies.csv \color{black} file found on Teams. You may use the course guide as a reference. Here, we wish to assess if homemade cookies are preferred among cadets, as has been implied by various internet surveys. As a reference, we will assume that there is no difference between preferences for cookie maker.
+
+\color{blue}
+\begin{verbatim}
+library(tidyverse)
+library(janitor)
+
+Results <- read_csv("Cookies.csv")
+\end{verbatim}
+\color{black}
+
+\hspace{0.1in} \textbf{a) } List the null and alternate hypothesis, as given in this scenario.
+
+\sol{$H_0: \pi = \frac{1}{3}$. The true long-run proportion of cadets who prefer CPT Rocha's cookies when given the choice between homemade, Chips Ahoy, and Keebler is $\frac{1}{3}$\\
+$H_a: \pi > \frac{1}{3}$. The true long-run proportion of cadets who prefer CPT Rocha's cookies when given the choice between homemade, Chips Ahoy, and Keebler is greater than $\frac{1}{3}$}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{b) } List the number of successes, number of failures, sample size, and observed statistic as a proportion.}
+
+\sol{Number of ``successes" = 50\\
+Number of ``failures" = 17\\
+\textit{n} = 67\\
+$\hat{p} = \frac{50}{67} = 0.746$}
+
+\color{blue}
+\begin{verbatim}
+Results %>% 
+  count(Best) %>% 
+  mutate(Proportion = n/sum(n)) %>% 
+  adorn_totals()
+\end{verbatim}
+\color{black}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) } Do we meet the validity conditions to use theoretical methods?}
+
+\sol{Yes, we have at least 10 successes and 10 failures.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d) } Calculate the p-value and standardized statistic. Justify why you used simulation or theoretical methods.}
+
+\sol{$z = 7.170108\\
+p-value = 3.747e^{-13}$\\
+We used theoretical methods because we met our validity conditions.}
+
+% \color{blue}
+% \begin{verbatim}
+% z <- ((50/67) - (1/3))/sqrt((1/3) * (2/3) / 67); z
+% 1 - pnorm(z)
+% \end{verbatim}
+% \color{black}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{e) } Interpret your results.
+
+\sol{With a p-value of 0.0000000000003747 and a standardized statistic of 7.17, we have \textbf{very strong} evidence against the null hypothesis that cadets have no preference between the homemade, Chips Ahoy, and Keebler makers of chocolate chip cookies.}
+
+\pagebreak
+
+
+
+
+\textbf{3) } A survey was run on 4 sections of MA206 cadets asking which of two senatorial candidates appeared more competent. The results are consolidated in the \color{blue} Faces.csv \color{black} file found on Teams. You may use the course guide as a reference. Here, we wish to assess if cadets agree, given one second to look at side-by-side black and white photographs, which candidate appears more competent. We assume that if there is no difference and cadets choose randomly, then either candidate has an equal chance of being selected.
+
+\color{blue}
+\begin{verbatim}
+library(tidyverse)
+library(janitor)
+
+FacesResults <- read_csv("Faces.csv")
+\end{verbatim}
+\color{black}
+
+\hspace{0.1in} \textbf{a) } List the null and alternate hypothesis, as given in this scenario.
+
+\sol{$H_0: \pi = \frac{1}{2}$. The true long-run proportion of cadets who choose the candidate on the left (or right) is equal to $\frac{1}{2}$\\
+$H_a: \pi \ne \frac{1}{2}$. The true long-run proportion of cadets who choose the candidate on the left (or right) is not equal to $\frac{1}{2}$}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{b) } List the number of successes, number of failures, observed statistic as a proportion, and the sample size.}
+
+\sol{Here, we are defining the candidate on the left as a "success." \\
+Number of ``successes" = 59\\
+Number of ``failures" = 4 \\
+$\hat{p} = \frac{59}{63} = 0.9365$\\
+\textit{n} = 63}
+
+% \color{blue}
+% \begin{verbatim}
+% FacesResults %>% 
+%   count(Faces) %>% 
+%   mutate(Proportion = n/sum(n)) %>% 
+%   adorn_totals()
+% \end{verbatim}
+% \color{black}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) } Do we meet the validity conditions to use theoretical methods?}
+
+\sol{No, we do not have at least 10 failures.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{d) } Calculate the p-value and standardized statistic. Justify why you used simulation or theoretical methods.}
+
+\sol{p-value = 0 (Note, with simulation, may have some variation)\\
+z = $\frac{0.93650794 - 0.5}{0.068} = 6.613757$}
+
+% \color{blue}
+% \begin{verbatim}
+% phat <- 59/63
+% z <- (phat - 0.5)/0.066; z
+%     ##The 0.066 SD came from the applet simulation, answers may vary
+% 2 * (1 - pnorm(abs(z)))
+% \end{verbatim}
+% \color{black}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{e) } Interpret your results.
+
+\sol{With a p-value of computationally 0 and a standardized statistic of 6.062951, we have \textbf{very strong} evidence against the null hypothesis that cadets randomly choose which candidate appears more competent.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \textbf{f) } Have we proven that cadets chose the candidate on the left because he appeared more competent and did not randomly select him?
+
+\sol{No, we have not proven this. However, we have deemed it is very unlikely - we have very strong evidence that our observed statistic would not occur if cadets were choosing randomly.}
+
+\pagebreak
+
+\textbf{4) } On the television show \textit{Mythbusters}, the hosts Jamie and Adam wanted to investigate which side buttered toast prefers to land on when it falls through the air. To replicate a piece of toast falling through the air, they set up a specially designed rig on the roof shot buttered toast into the air. Their results are replicated in the \color{blue} Toast.csv \color{black} file. 
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{a) } Write your null and alternate hypotheses, using symbols and words.}
+
+\sol{$H_0: \pi = 0.5$. The true long-run proportion of times that buttered toast lands with buttered side down is 0.5.\\
+$H_a: \pi \ne 0.5$. The true long-run proportion of times that buttered toast lands with buttered side down is not equal to 0.5.}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{b) } List your p-value, standardized statistic, and if you used theoretical methods.}
+
+\sol{We have at least 10 successes and 10 failures, so we will use theoretical methods to calculate z and p-value.\\
+$\hat{p} = \frac{19}{48} = 0.395833\\
+z = \frac{\hat{p} - \pi_0}{\sqrt{\frac{\pi \times (1 - \pi)}{n}}} = \frac{0.395833 - 0.5}{\sqrt{\frac{0.5 \times 0.5}{48}}} = -1.443376$ \\
+p-value = $2 \times (1 - pnorm(abs(-1.443376))) = 0.1489147$}
+
+% \color{blue}
+% \begin{verbatim}
+% Toast <- read_csv("Toast.csv")
+
+% Toast %>% 
+%   count(Butter) %>% 
+%   mutate(Proportion = n/sum(n)) %>% 
+%   adorn_totals()
+  
+% phat <- 19/48
+% null <- 0.5
+% z <- (phat - null)/sqrt(null * (1 - null) / 48); z
+% 2 * (1 - pnorm(abs(z)))
+% \end{verbatim}
+
+% \color{black}
+
+\vspace{0.25in}
+
+\hspace{0.1in} \colorbox{yellow}{\textbf{c) } Write your conclusions, ensuring you reference your strength of evidence and what parameter you are} \\ \colorbox{yellow}{inferring about.}
+
+\sol{With a p-value of 0.1489147 and standardized statistic of -1.443376, we conclude that our observed statistic of 0.395833 provides weak evidence against our null hypothesis that the true long-run proportion of times that buttered toast lands with buttered side down is 50$\%$. It is feasible that the side buttered toast lands on is purely random with no preference with regards to side.}
+
+\end{document}
+
+

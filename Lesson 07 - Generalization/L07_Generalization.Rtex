@@ -58,9 +58,9 @@ library(tidyverse)
 %---END R-Code Solution Function------------------------------------%
 
 %%%%%%%%%%% Turn ON/OFF text solutions with this command%%%%%%%%%%%
-%\showSolution % comment out to hide solutions 
+\showSolution % comment out to hide solutions 
 %%%%%%%%%%% Turn ON/OFF R-code solutions with this command%%%%%%%%%
-%\renewcommand{\solR}[0]{} % Comment out to hide R-Code Solutions
+\renewcommand{\solR}[0]{} % Comment out to hide R-Code Solutions
 
 %------------------------------------------------------------------------------------------------
 
