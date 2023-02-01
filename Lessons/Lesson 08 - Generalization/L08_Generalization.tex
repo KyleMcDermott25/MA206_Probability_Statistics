@@ -37,10 +37,10 @@
 
 
 
-% R Code to load tidyverse package
-<<echo=FALSE, message=FALSE, warning=FALSE>>=
-library(tidyverse)
-@
+% R Code to load tidyverse package. Must be .RTex file.
+%<<echo=FALSE, message=FALSE, warning=FALSE>>=
+%library(tidyverse)
+%@
 
 % Alternate method of doing solution function.
 %\newcommand{\sol}[1]{}
@@ -193,7 +193,8 @@ The APFT is scored with 3 events on a 100 point scale, where 60 is passing in ea
 
 \textbf{A.5)} What is our null and alternate hypothesis, stated in both words and symbols?
 
-\sol{$H_0: \mu = 270$. The true mean APFT score for the Corps of Cadets is 270.\\
+\sol{$H_0: \mu = 270$. The true mean APFT score for the Corps of Cadets is 270. \\
+
 $H_a: \mu \ne 270$. The true mean APFT score for the Corps of Cadets is not 270.}
 
 \vspace{0.2in}
@@ -233,14 +234,14 @@ ACFT %>%
 
 \textbf{A.8)} Use R to create a histogram of the APFT scores and describe the shape, center, variability, and any unusual observations.
 
-\sol{The shape appears to have two peaks split at the 300 cutoff point, which makes sense due to the grading rules. It has a mean at 304 and median at 296, indicating some right skew. Our standard deviation is 29.1, with values ranging from about 225 up to 275.}
+\sol{The shape appears to have two peaks split at the 300 cutoff point, which makes sense due to the grading rules. It has a mean at 304 and median at 296, indicating some right skew. Our standard deviation is 29.1, with values ranging from about 225 up to 375.}
 
 \vspace{0.2in}
 
-\textbf{A.9)} Calculate the mean, median, standard deviation, and sample size of the ACFT scores. Include the proper notation as appropriate.
+\textbf{A.9)} Calculate the mean, median, standard deviation, and sample size of the APFT scores. Include the proper notation as appropriate.
 
-\sol{From the code above, we find that 
-mean = $\mu$ = 304\\
+\sol{From the code above, we find that \\ 
+mean = $\bar{x}$ = 304\\
 median = 296 \\
 standard deviation = \textit{s} = 29.1\\
 sample size = \textit{n} = 293}
@@ -388,11 +389,11 @@ ACFT %>%
 
 \vspace{0.25in}
 
-\textbf{B.9)} Calculate the mean, median, standard deviation, and sample size of the ACFT scores. Include the proper notation as appropriate.
+\textbf{B.9)} Calculate the mean, median, standard deviation, and sample size of the IOCT scores. Include the proper notation as appropriate.
 
 \sol{From the code above, we find that 
-mean = $\mu$ = 824\\
-median = 829 \\
+mean = $\bar{x}$ = 829\\
+median = 824 \\
 standard deviation = \textit{s} = 83.9\\
 sample size = \textit{n} = 293}
 
