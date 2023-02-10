@@ -1,0 +1,137 @@
+---
+title: "L8_Generalization"
+author: "MAJ Kyle McDermott"
+date: "2023-01-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r packages, message=FALSE}
+library(tidyverse)
+library(janitor)
+```
+
+## Lesson 08 - Generalization (2.2 - 2.3) - SOLUTIONS
+
+**Load ACFT Dataset**
+
+```{r}
+# Load data
+ACFT <- read_csv("ACFT1.csv")
+```
+
+```{r}
+# Explore Data
+head(ACFT)
+colnames(ACFT)
+```
+### APFT Data
+```{r}
+# Plot APFT Scores
+ACFT %>%
+  ggplot(aes(x = APFT_score)) +
+  geom_histogram() +
+  labs(x = "OVerall Score", y = "Count", title = "Cadet APFT Scores")
+
+# Summarize APFT Scores
+ACFT %>% 
+  summarize(median = median(APFT_score),
+            mean = mean(APFT_score),
+            sd = sd(APFT_score),
+            n = n()
+  )
+```
+
+```{r}
+# Calculate t - statistic and pvalue
+n <- 293
+xbar <- 304
+mu <- 270
+s <- 29.1
+
+t <- (xbar - mu)/(s/sqrt(n))
+
+pvalue <- 2*(1-pt(abs(t), n-1))
+
+```
+
+
+
+```{r}
+#Do analysis based on Sex and APFT Score
+ACFT %>% 
+  #  filter(APFT_score <= 300) %>% 
+  ggplot(aes(x = APFT_score)) +
+  geom_histogram()+
+  labs(x = "Overall Score", y="Count", title="Cadet APFT Scores")
+
+ACFT %>% 
+  ggplot(aes(x = APFT_score, fill=Sex)) +
+  geom_histogram()+
+  labs(x = "Overall Score", y="Count", title="Cadet APFT Scores")
+
+ACFT %>% 
+  ggplot(aes(x = APFT_score, fill=Sex)) +
+  geom_histogram(position = "dodge")+
+  labs(x = "Overall Score", y="Count", title="Cadet APFT Scores")
+```
+
+```{r}
+#Look at males vs females
+#Males
+ACFT %>% 
+  filter(Sex == "Male") %>%
+  summarize(median = median(APFT_score),
+            mean = mean(APFT_score),
+            sd = sd(APFT_score),
+            n = n()
+  )
+
+#t stat
+(301 - 270)/(28.6/234)
+#pvalue
+2*(1-pt(abs(253.636), 234-1))
+
+```
+
+```{r}
+#Females
+ACFT %>% 
+  filter(Sex == "Female") %>%
+  summarize(median = median(APFT_score),
+            mean = mean(APFT_score),
+            sd = sd(APFT_score),
+            n = n()
+  )
+
+#t stat
+(312 - 270)/(29.4/59)
+#pvalue
+pvalue <- 2*(1-pt(abs(84.29), 234-1))
+```
+
+### IOCT Data
+
+```{r}
+#Plot IOCT Scores
+ACFT %>% 
+  ggplot(aes(x = IOCT_Score)) +
+  geom_histogram() +
+  labs(x = "Overall Score", y = "Count", title = "Cadet IOCT Scores")
+```
+```{r}
+# Summary stats of IOCT Score
+ACFT %>% 
+  summarize(
+    median = median(IOCT_Score),
+    mean = mean(IOCT_Score),
+    s = sd(IOCT_Score),
+    n = n()
+  )
+```
+
+
