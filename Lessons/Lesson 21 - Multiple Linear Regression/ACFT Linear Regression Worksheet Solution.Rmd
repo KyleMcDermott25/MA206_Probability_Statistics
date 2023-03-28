@@ -1,0 +1,227 @@
+---
+pdf_document: default
+author: ''
+date: "3/29/2023"
+output:
+  html_document:
+    code_folding: hide
+  pdf_document: default
+title: "Modeling the ACFT"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+# To copy and paste code chunks.  Note: "include" must not be set to FALSE in the chunk options
+klippy::klippy()
+```
+
+Load the data and packages.
+
+```{r, include=TRUE, message=FALSE, warning=FALSE}
+rm(list=ls())
+library(tidyverse)
+library(janitor)
+df <-  read_csv("https://raw.githubusercontent.com/acammack1234/ma206/main/acft_ioct.csv")
+```
+
+###  Is there an association between the Standing Power Throw (SPT) and Leg Tuck (LTK) raw scores?
+
+Causal Diagram: SPT $\rightarrow$ LTK 
+
+1. Write the equation for the linear model with beta's.\
+$\hat{LTK}=\beta_0 + \beta_1*SPT$
+
+1. Give the hypotheses in symbols and words.\
+$H_0: \beta_1 = 0$ "No association between SPT and LTK raw scores."\
+$H_A: \beta_1 \neq 0$ "There is an association between SPT and LTK raw scores."
+
+1. Plot the association, including the regression line.  Is there anything unusual about the data? (Hint: You may need to remove an outlier.)\
+```{r}
+# Remove the outlier
+df = df %>% filter(spr_raw < 100)
+
+df %>% ggplot(aes(x = spr_raw, y = ltk_raw)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+1. Create a linear model to test your hypotheses.\
+
+```{r}
+lm1 = lm(ltk_raw ~ spr_raw, data = df)
+summary(lm1)
+```
+
+1. Give the updated linear model with the coefficients determined by linear regression.\
+$\hat{LTK}=-0.271 + 1.12*SPT$
+
+1. Interpret the intercept term.\
+The predicted number of LTK's for someone with an SPT of 0m is -0.271 reps.  This doesn't have any real world significance because we are extrapolating beyond our data.
+
+1. Interpret the slope term.\
+For every 1 meter increase in SPT, we expect a 1.12 rep increase in leg tucks.
+
+1. Conclusion of your hypothesis test at a 5% significance level.\
+We are looking at the p-value associated with the SPT coefficient ($<2*10^{-16}$).\
+$\text{p-value} < \alpha$, so we reject $H_0$ in favor of the alternative.
+There is a positive association between SPT and LTK.
+
+1. Interpret the R-squared value.\
+Our model accounts for `r round(summary(lm1)$r.squared,3)*100`% of the variance in LTK reps.
+
+1. Check the 4 Validity Conditions (L.I.N.E.).  Are any not met?\
+```{r}
+# Linearity & Equal Variance
+lm1%>%
+  fortify(lm1$model)%>%
+  ggplot(aes(x = .fitted, 
+             y = .resid))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  labs( x = "Predicted Values", 
+        y = "Residuals", 
+        title = "Residuals vs. predicted values")
+
+# Independence 
+lm1%>%
+  fortify(lm1$model) %>%
+  mutate(row = row_number()) %>%
+  ggplot(aes(x = row, 
+             y = .resid))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  labs(x = "Order of Occurence", 
+       y = "Residuals", 
+       title = "Residuals in Order of Occurence")
+
+# Normality of Residuals
+lm1%>%
+  fortify(lm1$model)%>%
+  ggplot(aes(x = .resid))+
+  geom_histogram()+
+  labs(x = "Residuals", 
+       title = "Histogram of residuals")
+```
+
+All four validity conditions are met.
+
+1. Can we generalize these results to a larger population?  Why or why not?\
+No, this is not a random sample of cadets.  There is the potential for bias.
+
+
+1. Can we determine causation?  Why or why not.\
+No, this is an observational study and not an experiment, therefore subjects were not randomly assigned to 
+explanatory variable groups.  There may be confounding variables influencing the associations.
+
+\newpage
+
+###  Does sex change the association between the Standing Power Throw (SPT) and Leg Tuck (LTK) raw scores?
+
+1. Draw the updated causal diagram.\
+SPT $\rightarrow$ LTK plus and arrow from sex to both SPT and LTK
+
+1. Write the equation for the linear model with beta's.\
+$\hat{LTK}=\beta_0 + \beta_1*SPT + \beta_2*sex + \beta_3*SPT*sex$
+
+1. Give the hypotheses in symbols and words.\
+$H_0: \beta_3 = 0$ "Sex does not change the association between SPT and LTK."
+$H_A: \beta_3 \neq 0$ "Sex does change the association between SPT and LTK."
+
+1. Plot the association, including the regression line.\
+```{r}
+df %>% ggplot(aes(x = spr_raw, y = ltk_raw, color = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+1. Create a linear model to test your hypotheses.\
+```{r}
+lm2 = lm(ltk_raw ~ spr_raw*sex, data = df)
+summary(lm2)
+#install.packages("ggiraphExtra")
+library(ggiraphExtra)
+ggPredict(lm2, se = FALSE, interactive = TRUE)
+```
+
+1. Give the updated linear model with the coefficients determined by linear regression.\
+$\hat{LTK}=2.19 + 0.353*SPT + 4.82*sexMale + 0.0826*SPT*sex$
+
+1. Which level of *sex* is included in the base model?\
+Female.  By default the base level is the level that comes first alphabetically (ex. female before male).
+To change the base level for a categorical variable use the **relevel** function.  
+**Example:** `df$sex = relevel(as.factor(df$sex), "Male")`
+
+
+1. Interpret the intercept term.\
+The predicted number of LTK's for a female cadet with an SPT of 0m is 2.19 reps.
+
+1. Interpret the base slope term.\
+For female cadets, for every additional SPT meter, we predict a 0.353 rep increase in LTK's, after adjusting for sex.
+
+1. Interpret the base term for *sex*.\
+For male cadets, we have a vertical adjustment of 4.82 LTK reps at the y-intercept. 
+
+1. Interpret the interaction term.\
+For male cadets, we expect a 0.0826 increase in the base slope of 0.353.  This means that for male cadets,
+for every additional SPT meter, we expect a (0.353 + 0.0826 = 0.4356) increase in LTK's.
+
+We can think of the interaction term as a slope adjustment that is only turned on for male cadets.
+
+1. Calculate the LTK reps for a male cadet with an SPT of 6m.\
+```{r}
+new <- tibble(sex="Male", spr_raw = 6)
+predict(lm2,newdata=new)
+```
+
+1. Calculate the LTK reps for a female cadet with an SPT of 6m.\
+```{r}
+new <- tibble(sex="Female", spr_raw = 6)
+predict(lm2,newdata=new)
+```
+
+1. Conclusion of your hypothesis test at a 5% significance level.\
+We are looking at the p-value associated with the interaction term ($0.891$).\
+$\text{p-value}\geq \alpha$ so we fail to reject $H_0$.  It is plausible that sex does not affect the association between SPT and LTK raw scores.
+
+1. Interpret the R-squared value.\
+Our model accounts for `r round(summary(lm2)$r.squared,3)*100`% of the variation in LTK reps.  
+
+1. Check the 4 Validity Conditions (L.I.N.E.).  Are any not met?\
+```{r}
+# Linearity & Equal Variance
+lm2%>%
+  fortify(lm2$model)%>%
+  ggplot(aes(x = .fitted, 
+             y = .resid, color = sex))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  labs( x = "Predicted Values", 
+        y = "Residuals", 
+        title = "Residuals vs. predicted values")
+
+# Independence 
+lm2%>%
+  fortify(lm2$model) %>%
+  mutate(row = row_number()) %>%
+  ggplot(aes(x = row, 
+             y = .resid, color=sex))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  labs(x = "Order of Occurence", 
+       y = "Residuals", 
+       title = "Residuals in Order of Occurence")
+
+# Normality of Residuals
+lm2%>%
+  fortify(lm2$model)%>%
+  ggplot(aes(x = .resid))+
+  geom_histogram()+
+  labs(x = "Residuals", 
+       title = "Histogram of residuals")
+```
+
+All four validity conditions are met.
+
